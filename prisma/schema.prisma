@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String              @id @default(uuid())
+  name           String
+  email          String              @unique
+  password       String
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  categories     Category[]
+  collaborations TaskCollaboration[]
+  assignedTasks  Task[]              @relation("TaskAssignedTo")
+  createdTasks   Task[]              @relation("TaskCreatedBy")
+
+  @@map("users")
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  color       String?
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+
+  @@map("categories")
+}
+
+model Task {
+  id             String              @id @default(uuid())
+  title          String
+  description    String?
+  status         TaskStatus          @default(TODO)
+  priority       TaskPriority
+  dueDate        DateTime?
+  categoryId     String?
+  assignedUserId String
+  createdById    String
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  collaborations TaskCollaboration[]
+  assignedUser   User                @relation("TaskAssignedTo", fields: [assignedUserId], references: [id], onDelete: Cascade)
+  category       Category?           @relation(fields: [categoryId], references: [id])
+  createdBy      User                @relation("TaskCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@map("tasks")
+}
+
+model TaskCollaboration {
+  id        String            @id @default(uuid())
+  taskId    String
+  userId    String
+  role      CollaborationRole
+  createdAt DateTime          @default(now())
+  task      Task              @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, userId])
+  @@map("task_collaborations")
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum CollaborationRole {
+  OWNER
+  COLLABORATOR
+  VIEWER
+}
