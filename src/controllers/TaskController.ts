@@ -17,11 +17,13 @@ export class TaskController {
       const task = await this.taskService.createTask(taskData);
 
       return reply.status(201).send({
+        success: true,
         message: "Task created successfully",
         data: task,
       });
     } catch (error) {
       return reply.status(400).send({
+        success: false,
         message: error instanceof Error ? error.message : "Task creation failed",
       });
     }
@@ -34,11 +36,13 @@ export class TaskController {
       const task = await this.taskService.getTaskById(id, userId);
 
       return reply.status(200).send({
+        success: true,
         message: "Task retrieved successfully",
         data: task,
       });
     } catch (error) {
       return reply.status(404).send({
+        success: false,
         message: error instanceof Error ? error.message : "Task not found",
       });
     }
@@ -50,11 +54,13 @@ export class TaskController {
       const tasks = await this.taskService.getTasksByUser(userId);
 
       return reply.status(200).send({
+        success: true,
         message: "Tasks retrieved successfully",
         data: tasks,
       });
     } catch (error) {
       return reply.status(500).send({
+        success: false,
         message: "Failed to retrieve tasks",
       });
     }
@@ -67,11 +73,13 @@ export class TaskController {
       const tasks = await this.taskService.getTasksByCategory(categoryId, userId);
 
       return reply.status(200).send({
+        success: true,
         message: "Tasks retrieved successfully",
         data: tasks,
       });
     } catch (error) {
       return reply.status(500).send({
+        success: false,
         message: "Failed to retrieve tasks",
       });
     }
@@ -84,11 +92,13 @@ export class TaskController {
       const tasks = await this.taskService.getTasksByStatus(status, userId);
 
       return reply.status(200).send({
+        success: true,
         message: "Tasks retrieved successfully",
         data: tasks,
       });
     } catch (error) {
       return reply.status(500).send({
+        success: false,
         message: "Failed to retrieve tasks",
       });
     }
@@ -100,11 +110,13 @@ export class TaskController {
       const tasks = await this.taskService.getAssignedTasks(userId);
 
       return reply.status(200).send({
+        success: true,
         message: "Assigned tasks retrieved successfully",
         data: tasks,
       });
     } catch (error) {
       return reply.status(500).send({
+        success: false,
         message: "Failed to retrieve assigned tasks",
       });
     }
@@ -118,11 +130,13 @@ export class TaskController {
       const task = await this.taskService.updateTask(id, request.body as UpdateTaskData, userId);
 
       return reply.status(200).send({
+        success: true,
         message: "Task updated successfully",
         data: task,
       });
     } catch (error) {
       return reply.status(400).send({
+        success: false,
         message: error instanceof Error ? error.message : "Task update failed",
       });
     }
@@ -136,10 +150,12 @@ export class TaskController {
       await this.taskService.deleteTask(id, userId);
 
       return reply.status(200).send({
+        success: true,
         message: "Task deleted successfully",
       });
     } catch (error) {
       return reply.status(400).send({
+        success: false,
         message: error instanceof Error ? error.message : "Task deletion failed",
       });
     }

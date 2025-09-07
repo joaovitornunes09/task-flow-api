@@ -6,6 +6,12 @@ export class CategoryService implements ICategoryService {
   constructor(private categoryRepository: ICategoryRepository) {}
 
   async createCategory(data: CreateCategoryData): Promise<Category> {
+    // Check if category with same name already exists for this user
+    const existingCategory = await this.categoryRepository.findByNameAndUserId(data.name, data.userId);
+    if (existingCategory) {
+      throw new Error("A category with this name already exists");
+    }
+
     return await this.categoryRepository.create(data);
   }
 
@@ -26,9 +32,16 @@ export class CategoryService implements ICategoryService {
     if (!category) {
       throw new Error("Category not found");
     }
-    
+
     if (category.userId !== userId) {
       throw new Error("Unauthorized to update this category");
+    }
+
+    if (data.name) {
+      const existingCategory = await this.categoryRepository.findByNameAndUserId(data.name, userId);
+      if (existingCategory && existingCategory.id !== id) {
+        throw new Error("A category with this name already exists");
+      }
     }
 
     return await this.categoryRepository.update(id, data);
@@ -39,7 +52,7 @@ export class CategoryService implements ICategoryService {
     if (!category) {
       throw new Error("Category not found");
     }
-    
+
     if (category.userId !== userId) {
       throw new Error("Unauthorized to delete this category");
     }

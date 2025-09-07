@@ -13,6 +13,7 @@ export async function reportRoutes(app: FastifyTypedInstance, reportController: 
         summary: "Get user report",
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.object({
               totalTasks: z.number(),
@@ -48,6 +49,7 @@ export async function reportRoutes(app: FastifyTypedInstance, reportController: 
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.array(z.object({
               userId: z.string(),
@@ -77,6 +79,7 @@ export async function reportRoutes(app: FastifyTypedInstance, reportController: 
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.object({
               userId: z.string(),
@@ -86,6 +89,7 @@ export async function reportRoutes(app: FastifyTypedInstance, reportController: 
             }),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },

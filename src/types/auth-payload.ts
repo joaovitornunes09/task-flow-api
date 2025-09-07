@@ -15,6 +15,7 @@ declare module "fastify" {
   interface FastifyRequest {
     authPayload: AuthenticatedPayload;
     user: AuthenticatedUser;
+    token: string;
   }
 }
 

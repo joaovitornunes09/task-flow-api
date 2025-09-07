@@ -1,8 +1,7 @@
 import { ITaskService } from "../types/ITaskService";
 import { ITaskRepository } from "../types/ITaskRepository";
 import { ITaskCollaborationRepository } from "../types/ITaskCollaborationRepository";
-import { Task, CreateTaskData, UpdateTaskData, TaskStatus } from "../models/Task";
-import { CollaborationRole } from "../models/TaskCollaboration";
+import { Task, CreateTaskData, UpdateTaskData, TaskStatus, TaskWithDetails } from "../models/Task";
 
 export class TaskService implements ITaskService {
   constructor(
@@ -11,18 +10,23 @@ export class TaskService implements ITaskService {
   ) {}
 
   async createTask(data: CreateTaskData): Promise<Task> {
+    const existingTask = await this.taskRepository.findByTitleAndCategory(data.title, data.categoryId || null);
+    if (existingTask) {
+      throw new Error("A task with this title already exists in this category");
+    }
+
     const task = await this.taskRepository.create(data);
 
     await this.collaborationRepository.create({
       taskId: task.id,
       userId: data.createdById,
-      role: CollaborationRole.OWNER,
+      role: 'OWNER' as any,
     });
 
     return task;
   }
 
-  async getTaskById(id: string, userId: string): Promise<Task> {
+  async getTaskById(id: string, userId: string): Promise<TaskWithDetails> {
     const task = await this.taskRepository.findById(id);
     if (!task) {
       throw new Error("Task not found");
@@ -36,11 +40,11 @@ export class TaskService implements ITaskService {
     return task;
   }
 
-  async getTasksByUser(userId: string): Promise<Task[]> {
+  async getTasksByUser(userId: string): Promise<TaskWithDetails[]> {
     return await this.taskRepository.findByUserId(userId);
   }
 
-  async getTasksByCategory(categoryId: string, userId: string): Promise<Task[]> {
+  async getTasksByCategory(categoryId: string, userId: string): Promise<TaskWithDetails[]> {
     const tasks = await this.taskRepository.findByCategoryId(categoryId);
 
     const accessibleTasks = [];
@@ -59,7 +63,7 @@ export class TaskService implements ITaskService {
     return accessibleTasks;
   }
 
-  async getTasksByStatus(status: TaskStatus, userId: string): Promise<Task[]> {
+  async getTasksByStatus(status: TaskStatus, userId: string): Promise<TaskWithDetails[]> {
     const allTasks = await this.taskRepository.findByStatus(status);
 
     const accessibleTasks = [];
@@ -78,7 +82,7 @@ export class TaskService implements ITaskService {
     return accessibleTasks;
   }
 
-  async getAssignedTasks(userId: string): Promise<Task[]> {
+  async getAssignedTasks(userId: string): Promise<TaskWithDetails[]> {
     return await this.taskRepository.findByAssignedUser(userId);
   }
 
@@ -91,10 +95,18 @@ export class TaskService implements ITaskService {
     const collaboration = await this.collaborationRepository.findByTaskAndUser(id, userId);
     const hasEditPermission = task.createdById === userId ||
                             task.assignedUserId === userId ||
-                            (collaboration && (collaboration.role === CollaborationRole.OWNER || collaboration.role === CollaborationRole.COLLABORATOR));
+                            (collaboration && (collaboration.role === 'OWNER' || collaboration.role === 'COLLABORATOR'));
 
     if (!hasEditPermission) {
       throw new Error("Unauthorized to update this task");
+    }
+
+    if (data.title) {
+      const categoryId = data.categoryId !== undefined ? data.categoryId : (task.categoryId || null);
+      const existingTask = await this.taskRepository.findByTitleAndCategory(data.title, categoryId);
+      if (existingTask && existingTask.id !== id) {
+        throw new Error("A task with this title already exists in this category");
+      }
     }
 
     return await this.taskRepository.update(id, data);
@@ -108,7 +120,7 @@ export class TaskService implements ITaskService {
 
     const collaboration = await this.collaborationRepository.findByTaskAndUser(id, userId);
     const canDelete = task.createdById === userId ||
-                     (collaboration && collaboration.role === CollaborationRole.OWNER);
+                     (collaboration && collaboration.role === 'OWNER');
 
     if (!canDelete) {
       throw new Error("Unauthorized to delete this task");

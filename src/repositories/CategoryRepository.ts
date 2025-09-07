@@ -22,6 +22,15 @@ export class CategoryRepository implements ICategoryRepository {
     })) as Category[];
   }
 
+  async findByNameAndUserId(name: string, userId: string): Promise<Category | null> {
+    return (await prisma.category.findFirst({
+      where: {
+        name,
+        userId,
+      },
+    })) as Category | null;
+  }
+
   async update(id: string, data: UpdateCategoryData): Promise<Category> {
     return (await prisma.category.update({
       where: { id },

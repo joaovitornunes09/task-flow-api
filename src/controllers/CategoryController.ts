@@ -16,11 +16,13 @@ export class CategoryController {
       const category = await this.categoryService.createCategory(categoryData);
       
       return reply.status(201).send({
+        success: true,
         message: "Category created successfully",
         data: category,
       });
     } catch (error) {
       return reply.status(400).send({
+        success: false,
         message: error instanceof Error ? error.message : "Category creation failed",
       });
     }
@@ -32,11 +34,13 @@ export class CategoryController {
       const category = await this.categoryService.getCategoryById(id);
       
       return reply.status(200).send({
+        success: true,
         message: "Category retrieved successfully",
         data: category,
       });
     } catch (error) {
       return reply.status(404).send({
+        success: false,
         message: error instanceof Error ? error.message : "Category not found",
       });
     }
@@ -48,11 +52,13 @@ export class CategoryController {
       const categories = await this.categoryService.getCategoriesByUser(userId);
       
       return reply.status(200).send({
+        success: true,
         message: "Categories retrieved successfully",
         data: categories,
       });
     } catch (error) {
       return reply.status(500).send({
+        success: false,
         message: "Failed to retrieve categories",
       });
     }
@@ -66,11 +72,13 @@ export class CategoryController {
       const category = await this.categoryService.updateCategory(id, request.body as UpdateCategoryData, userId);
       
       return reply.status(200).send({
+        success: true,
         message: "Category updated successfully",
         data: category,
       });
     } catch (error) {
       return reply.status(400).send({
+        success: false,
         message: error instanceof Error ? error.message : "Category update failed",
       });
     }
@@ -84,10 +92,12 @@ export class CategoryController {
       await this.categoryService.deleteCategory(id, userId);
       
       return reply.status(200).send({
+        success: true,
         message: "Category deleted successfully",
       });
     } catch (error) {
       return reply.status(400).send({
+        success: false,
         message: error instanceof Error ? error.message : "Category deletion failed",
       });
     }

@@ -1,4 +1,5 @@
 import z from "zod";
+import { formatISO } from "date-fns";
 import { FastifyTypedInstance } from "../types/fastify";
 import { withAuth } from "../middlewares/auth";
 import { CollaborationController } from "../controllers/CollaborationController";
@@ -20,16 +21,18 @@ export async function collaborationRoutes(app: FastifyTypedInstance, collaborati
         }),
         response: {
           201: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.object({
               id: z.string(),
               taskId: z.string(),
               userId: z.string(),
               role: CollaborationRoleEnum,
-              createdAt: z.date().transform(date => date.toISOString()),
+              createdAt: z.date().transform(date => formatISO(date)),
             }),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
@@ -50,13 +53,14 @@ export async function collaborationRoutes(app: FastifyTypedInstance, collaborati
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.array(z.object({
               id: z.string(),
               taskId: z.string(),
               userId: z.string(),
               role: CollaborationRoleEnum,
-              createdAt: z.date().transform(date => date.toISOString()),
+              createdAt: z.date().transform(date => formatISO(date)),
               user: z.object({
                 id: z.string(),
                 name: z.string(),
@@ -65,6 +69,7 @@ export async function collaborationRoutes(app: FastifyTypedInstance, collaborati
             })),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
@@ -82,25 +87,26 @@ export async function collaborationRoutes(app: FastifyTypedInstance, collaborati
         summary: "Get user collaborations",
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.array(z.object({
               id: z.string(),
               taskId: z.string(),
               userId: z.string(),
               role: CollaborationRoleEnum,
-              createdAt: z.date().transform(date => date.toISOString()),
+              createdAt: z.date().transform(date => formatISO(date)),
               task: z.object({
                 id: z.string(),
                 title: z.string(),
                 description: z.string().nullable(),
                 status: z.enum(["TODO", "IN_PROGRESS", "COMPLETED"]),
                 priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
-                dueDate: z.date().nullable().transform(date => date ? date.toISOString() : null),
+                dueDate: z.date().nullable().transform(date => date ? formatISO(date) : null),
                 categoryId: z.string().nullable(),
                 assignedUserId: z.string(),
                 createdById: z.string(),
-                createdAt: z.date().transform(date => date.toISOString()),
-                updatedAt: z.date().transform(date => date.toISOString()),
+                createdAt: z.date().transform(date => formatISO(date)),
+                updatedAt: z.date().transform(date => formatISO(date)),
               }).optional(),
             })),
           }),
@@ -123,9 +129,11 @@ export async function collaborationRoutes(app: FastifyTypedInstance, collaborati
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
@@ -146,6 +154,7 @@ export async function collaborationRoutes(app: FastifyTypedInstance, collaborati
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.object({
               permission: CollaborationRoleEnum.nullable(),

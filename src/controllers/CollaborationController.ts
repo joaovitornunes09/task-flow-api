@@ -11,11 +11,13 @@ export class CollaborationController {
       const collaboration = await this.collaborationService.addCollaborator(request.body as CreateTaskCollaborationData, ownerId);
       
       return reply.status(201).send({
+        success: true,
         message: "Collaborator added successfully",
         data: collaboration,
       });
     } catch (error) {
       return reply.status(400).send({
+        success: false,
         message: error instanceof Error ? error.message : "Failed to add collaborator",
       });
     }
@@ -28,11 +30,13 @@ export class CollaborationController {
       const collaborators = await this.collaborationService.getTaskCollaborators(taskId, userId);
       
       return reply.status(200).send({
+        success: true,
         message: "Collaborators retrieved successfully",
         data: collaborators,
       });
     } catch (error) {
       return reply.status(400).send({
+        success: false,
         message: error instanceof Error ? error.message : "Failed to retrieve collaborators",
       });
     }
@@ -44,11 +48,13 @@ export class CollaborationController {
       const collaborations = await this.collaborationService.getUserCollaborations(userId);
       
       return reply.status(200).send({
+        success: true,
         message: "Collaborations retrieved successfully",
         data: collaborations,
       });
     } catch (error) {
       return reply.status(500).send({
+        success: false,
         message: "Failed to retrieve collaborations",
       });
     }
@@ -62,10 +68,12 @@ export class CollaborationController {
       await this.collaborationService.removeCollaborator(taskId, userId, ownerId);
       
       return reply.status(200).send({
+        success: true,
         message: "Collaborator removed successfully",
       });
     } catch (error) {
       return reply.status(400).send({
+        success: false,
         message: error instanceof Error ? error.message : "Failed to remove collaborator",
       });
     }
@@ -78,11 +86,13 @@ export class CollaborationController {
       const permission = await this.collaborationService.checkUserPermission(taskId, userId);
       
       return reply.status(200).send({
+        success: true,
         message: "Permission checked successfully",
         data: { permission },
       });
     } catch (error) {
       return reply.status(500).send({
+        success: false,
         message: "Failed to check permission",
       });
     }

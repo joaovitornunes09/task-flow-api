@@ -1,10 +1,41 @@
 import z from "zod";
+import { formatISO, parseISO } from "date-fns";
 import { FastifyTypedInstance } from "../types/fastify";
 import { withAuth } from "../middlewares/auth";
 import { TaskController } from "../controllers/TaskController";
 
 const TaskStatusEnum = z.enum(["TODO", "IN_PROGRESS", "COMPLETED"]);
 const TaskPriorityEnum = z.enum(["LOW", "MEDIUM", "HIGH"]);
+
+const TaskUserSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string(),
+});
+
+const TaskCategorySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().nullable(),
+  color: z.string().nullable(),
+});
+
+const TaskWithDetailsSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string().nullable(),
+  status: TaskStatusEnum,
+  priority: TaskPriorityEnum,
+  dueDate: z.date().nullable().transform(date => date ? formatISO(date) : null),
+  categoryId: z.string().nullable(),
+  assignedUserId: z.string(),
+  createdById: z.string(),
+  createdAt: z.date().transform(date => formatISO(date)),
+  updatedAt: z.date().transform(date => formatISO(date)),
+  assignedUser: TaskUserSchema,
+  category: TaskCategorySchema.nullable(),
+  createdBy: TaskUserSchema,
+});
 
 export async function taskRoutes(app: FastifyTypedInstance, taskController: TaskController) {
   app.post(
@@ -18,12 +49,13 @@ export async function taskRoutes(app: FastifyTypedInstance, taskController: Task
           title: z.string().describe("Task title"),
           description: z.string().optional().describe("Task description"),
           priority: TaskPriorityEnum.describe("Task priority"),
-          dueDate: z.string().optional().transform(date => date ? new Date(date) : undefined).describe("Due date (ISO string)"),
+          dueDate: z.string().optional().transform(date => date ? parseISO(date) : undefined).describe("Due date (ISO string)"),
           categoryId: z.string().optional().describe("Category ID"),
           assignedUserId: z.string().describe("User ID to assign task to"),
         }),
         response: {
           201: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.object({
               id: z.string(),
@@ -31,15 +63,16 @@ export async function taskRoutes(app: FastifyTypedInstance, taskController: Task
               description: z.string().nullable(),
               status: TaskStatusEnum,
               priority: TaskPriorityEnum,
-              dueDate: z.date().nullable().transform(date => date ? date.toISOString() : null),
+              dueDate: z.date().nullable().transform(date => date ? formatISO(date) : null),
               categoryId: z.string().nullable(),
               assignedUserId: z.string(),
               createdById: z.string(),
-              createdAt: z.date().transform(date => date.toISOString()),
-              updatedAt: z.date().transform(date => date.toISOString()),
+              createdAt: z.date().transform(date => formatISO(date)),
+              updatedAt: z.date().transform(date => formatISO(date)),
             }),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
@@ -60,22 +93,12 @@ export async function taskRoutes(app: FastifyTypedInstance, taskController: Task
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
-            data: z.object({
-              id: z.string(),
-              title: z.string(),
-              description: z.string().nullable(),
-              status: TaskStatusEnum,
-              priority: TaskPriorityEnum,
-              dueDate: z.date().nullable().transform(date => date ? date.toISOString() : null),
-              categoryId: z.string().nullable(),
-              assignedUserId: z.string(),
-              createdById: z.string(),
-              createdAt: z.date().transform(date => date.toISOString()),
-              updatedAt: z.date().transform(date => date.toISOString()),
-            }),
+            data: TaskWithDetailsSchema,
           }),
           404: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
@@ -93,20 +116,9 @@ export async function taskRoutes(app: FastifyTypedInstance, taskController: Task
         summary: "Get user tasks",
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
-            data: z.array(z.object({
-              id: z.string(),
-              title: z.string(),
-              description: z.string().nullable(),
-              status: TaskStatusEnum,
-              priority: TaskPriorityEnum,
-              dueDate: z.date().nullable().transform(date => date ? date.toISOString() : null),
-              categoryId: z.string().nullable(),
-              assignedUserId: z.string(),
-              createdById: z.string(),
-              createdAt: z.date().transform(date => date.toISOString()),
-              updatedAt: z.date().transform(date => date.toISOString()),
-            })),
+            data: z.array(TaskWithDetailsSchema),
           }),
         },
       },
@@ -126,20 +138,9 @@ export async function taskRoutes(app: FastifyTypedInstance, taskController: Task
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
-            data: z.array(z.object({
-              id: z.string(),
-              title: z.string(),
-              description: z.string().nullable(),
-              status: TaskStatusEnum,
-              priority: TaskPriorityEnum,
-              dueDate: z.date().nullable().transform(date => date ? date.toISOString() : null),
-              categoryId: z.string().nullable(),
-              assignedUserId: z.string(),
-              createdById: z.string(),
-              createdAt: z.date().transform(date => date.toISOString()),
-              updatedAt: z.date().transform(date => date.toISOString()),
-            })),
+            data: z.array(TaskWithDetailsSchema),
           }),
         },
       },
@@ -159,20 +160,9 @@ export async function taskRoutes(app: FastifyTypedInstance, taskController: Task
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
-            data: z.array(z.object({
-              id: z.string(),
-              title: z.string(),
-              description: z.string().nullable(),
-              status: TaskStatusEnum,
-              priority: TaskPriorityEnum,
-              dueDate: z.date().nullable().transform(date => date ? date.toISOString() : null),
-              categoryId: z.string().nullable(),
-              assignedUserId: z.string(),
-              createdById: z.string(),
-              createdAt: z.date().transform(date => date.toISOString()),
-              updatedAt: z.date().transform(date => date.toISOString()),
-            })),
+            data: z.array(TaskWithDetailsSchema),
           }),
         },
       },
@@ -189,20 +179,9 @@ export async function taskRoutes(app: FastifyTypedInstance, taskController: Task
         summary: "Get assigned tasks",
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
-            data: z.array(z.object({
-              id: z.string(),
-              title: z.string(),
-              description: z.string().nullable(),
-              status: TaskStatusEnum,
-              priority: TaskPriorityEnum,
-              dueDate: z.date().nullable().transform(date => date ? date.toISOString() : null),
-              categoryId: z.string().nullable(),
-              assignedUserId: z.string(),
-              createdById: z.string(),
-              createdAt: z.date().transform(date => date.toISOString()),
-              updatedAt: z.date().transform(date => date.toISOString()),
-            })),
+            data: z.array(TaskWithDetailsSchema),
           }),
         },
       },
@@ -225,12 +204,13 @@ export async function taskRoutes(app: FastifyTypedInstance, taskController: Task
           description: z.string().optional(),
           status: TaskStatusEnum.optional(),
           priority: TaskPriorityEnum.optional(),
-          dueDate: z.string().optional().transform(date => date ? new Date(date) : undefined),
+          dueDate: z.string().optional().transform(date => date ? parseISO(date) : undefined),
           categoryId: z.string().optional(),
           assignedUserId: z.string().optional(),
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.object({
               id: z.string(),
@@ -238,15 +218,16 @@ export async function taskRoutes(app: FastifyTypedInstance, taskController: Task
               description: z.string().nullable(),
               status: TaskStatusEnum,
               priority: TaskPriorityEnum,
-              dueDate: z.date().nullable().transform(date => date ? date.toISOString() : null),
+              dueDate: z.date().nullable().transform(date => date ? formatISO(date) : null),
               categoryId: z.string().nullable(),
               assignedUserId: z.string(),
               createdById: z.string(),
-              createdAt: z.date().transform(date => date.toISOString()),
-              updatedAt: z.date().transform(date => date.toISOString()),
+              createdAt: z.date().transform(date => formatISO(date)),
+              updatedAt: z.date().transform(date => formatISO(date)),
             }),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
@@ -267,9 +248,11 @@ export async function taskRoutes(app: FastifyTypedInstance, taskController: Task
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },

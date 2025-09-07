@@ -22,6 +22,15 @@ model User {
   @@map("users")
 }
 
+model TokenBlacklist {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("token_blacklist")
+}
+
 model Category {
   id          String   @id @default(uuid())
   name        String

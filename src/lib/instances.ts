@@ -8,6 +8,7 @@ import { CategoryService } from "../services/CategoryService";
 import { TaskService } from "../services/TaskService";
 import { CollaborationService } from "../services/CollaborationService";
 import { ReportService } from "../services/ReportService";
+import { TokenBlacklistService } from "../services/TokenBlacklistService";
 
 import { UserController } from "../controllers/UserController";
 import { CategoryController } from "../controllers/CategoryController";
@@ -20,6 +21,9 @@ export const userRepository = new UserRepository();
 export const categoryRepository = new CategoryRepository();
 export const taskRepository = new TaskRepository();
 export const taskCollaborationRepository = new TaskCollaborationRepository();
+
+// Token service
+export const tokenBlacklistService = new TokenBlacklistService();
 
 // Services
 let userService: UserService;
@@ -42,7 +46,7 @@ export function initializeServices(jwtSign: (payload: any) => string) {
   collaborationService = new CollaborationService(taskCollaborationRepository, taskRepository);
   reportService = new ReportService(taskRepository, categoryRepository, userRepository);
 
-  userController = new UserController(userService);
+  userController = new UserController(userService, tokenBlacklistService);
   categoryController = new CategoryController(categoryService);
   taskController = new TaskController(taskService);
   collaborationController = new CollaborationController(collaborationService);

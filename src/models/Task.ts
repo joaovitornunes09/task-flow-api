@@ -24,6 +24,25 @@ export interface Task {
   updatedAt: Date;
 }
 
+export interface TaskUser {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface TaskCategory {
+  id: string;
+  name: string;
+  description?: string | null;
+  color?: string | null;
+}
+
+export interface TaskWithDetails extends Task {
+  assignedUser: TaskUser;
+  category?: TaskCategory | null;
+  createdBy: TaskUser;
+}
+
 export interface CreateTaskData {
   title: string;
   description?: string;

@@ -16,7 +16,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: task-flow-app
+    container_name: task-flow-api
     restart: unless-stopped
     ports:
       - "${PORT:-3333}:3333"

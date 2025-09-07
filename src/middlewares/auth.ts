@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { prisma } from "../lib/prisma";
 import { AuthenticatedPayload } from "../types/auth-payload";
+import { TokenBlacklistService } from "../services/TokenBlacklistService";
 
 export async function baseAuthMiddleware(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -14,9 +15,19 @@ export async function baseAuthMiddleware(request: FastifyRequest, reply: Fastify
 
     const token = authHeader.substring(7);
 
+    const tokenBlacklistService = new TokenBlacklistService();
+    const isBlacklisted = await tokenBlacklistService.isTokenBlacklisted(token);
+    
+    if (isBlacklisted) {
+      return reply.status(401).send({
+        message: "Token has been revoked",
+      });
+    }
+
     const decoded = request.server.jwt.verify(token) as AuthenticatedPayload;
 
     request.authPayload = decoded;
+    request.token = token;
   } catch (error) {
     return reply.status(401).send({
       message: "Invalid or expired token",

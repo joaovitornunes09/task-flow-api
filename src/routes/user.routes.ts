@@ -24,6 +24,7 @@ export async function userRoutes(
         }),
         response: {
           201: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.object({
               id: z.string(),
@@ -32,6 +33,7 @@ export async function userRoutes(
             }),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
@@ -53,6 +55,7 @@ export async function userRoutes(
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             token: z.string(),
             user: z.object({
@@ -62,6 +65,7 @@ export async function userRoutes(
             }),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
@@ -79,11 +83,13 @@ export async function userRoutes(
         summary: "Get profile",
         response: {
           200: z.object({
+            success: z.boolean(),
             id: z.string(),
             name: z.string(),
             email: z.string(),
           }),
           404: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
@@ -106,6 +112,7 @@ export async function userRoutes(
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.object({
               id: z.string(),
@@ -114,12 +121,35 @@ export async function userRoutes(
             }),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
       },
     }),
     userController.updateProfile.bind(userController)
+  );
+
+  app.post(
+    "/users/logout",
+    withAuth({
+      schema: {
+        description: "Logout user and invalidate token",
+        tags: ["Users"],
+        summary: "User logout",
+        response: {
+          200: z.object({
+            success: z.boolean(),
+            message: z.string(),
+          }),
+          500: z.object({
+            success: z.boolean(),
+            message: z.string(),
+          }),
+        },
+      },
+    }),
+    userController.logout.bind(userController)
   );
 
   app.get(
@@ -131,6 +161,7 @@ export async function userRoutes(
         summary: "Get all users",
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.array(
               z.object({

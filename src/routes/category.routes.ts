@@ -18,6 +18,7 @@ export async function categoryRoutes(app: FastifyTypedInstance, categoryControll
         }),
         response: {
           201: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.object({
               id: z.string(),
@@ -30,6 +31,7 @@ export async function categoryRoutes(app: FastifyTypedInstance, categoryControll
             }),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
@@ -50,6 +52,7 @@ export async function categoryRoutes(app: FastifyTypedInstance, categoryControll
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.object({
               id: z.string(),
@@ -62,6 +65,7 @@ export async function categoryRoutes(app: FastifyTypedInstance, categoryControll
             }),
           }),
           404: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
@@ -79,6 +83,7 @@ export async function categoryRoutes(app: FastifyTypedInstance, categoryControll
         summary: "Get user categories",
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.array(z.object({
               id: z.string(),
@@ -113,6 +118,7 @@ export async function categoryRoutes(app: FastifyTypedInstance, categoryControll
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
             data: z.object({
               id: z.string(),
@@ -125,6 +131,7 @@ export async function categoryRoutes(app: FastifyTypedInstance, categoryControll
             }),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },
@@ -145,9 +152,11 @@ export async function categoryRoutes(app: FastifyTypedInstance, categoryControll
         }),
         response: {
           200: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
           400: z.object({
+            success: z.boolean(),
             message: z.string(),
           }),
         },

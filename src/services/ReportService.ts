@@ -1,3 +1,4 @@
+import { startOfMonth } from "date-fns";
 import { IReportService, TaskReport, UserReport } from "../types/IReportService";
 import { ITaskRepository } from "../types/ITaskRepository";
 import { ICategoryRepository } from "../types/ICategoryRepository";
@@ -14,7 +15,7 @@ export class ReportService implements IReportService {
   async getUserTaskReport(userId: string): Promise<TaskReport> {
     const userTasks = await this.taskRepository.findByUserId(userId);
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfMonthDate = startOfMonth(now);
 
     const tasksByStatus = {
       [TaskStatus.TODO]: 0,
@@ -32,7 +33,7 @@ export class ReportService implements IReportService {
         overdueTasks++;
       }
 
-      if (task.status === TaskStatus.COMPLETED && task.updatedAt >= startOfMonth) {
+      if (task.status === TaskStatus.COMPLETED && task.updatedAt >= startOfMonthDate) {
         completedThisMonth++;
       }
     });

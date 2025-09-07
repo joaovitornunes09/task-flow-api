@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { ITaskRepository } from "../types/ITaskRepository";
-import { Task, CreateTaskData, UpdateTaskData, TaskStatus } from "../models/Task";
+import { Task, CreateTaskData, UpdateTaskData, TaskStatus, TaskWithDetails } from "../models/Task";
 
 export class TaskRepository implements ITaskRepository {
   async create(data: CreateTaskData): Promise<Task> {
@@ -12,13 +12,37 @@ export class TaskRepository implements ITaskRepository {
     })) as Task;
   }
 
-  async findById(id: string): Promise<Task | null> {
+  async findById(id: string): Promise<TaskWithDetails | null> {
     return (await prisma.task.findUnique({
       where: { id },
-    })) as Task | null;
+      include: {
+        assignedUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            color: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    })) as TaskWithDetails | null;
   }
 
-  async findByUserId(userId: string): Promise<Task[]> {
+  async findByUserId(userId: string): Promise<TaskWithDetails[]> {
     return (await prisma.task.findMany({
       where: {
         OR: [
@@ -26,36 +50,189 @@ export class TaskRepository implements ITaskRepository {
           { createdById: userId },
         ],
       },
+      include: {
+        assignedUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            color: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
-    })) as Task[];
+    })) as TaskWithDetails[];
   }
 
-  async findByCategoryId(categoryId: string): Promise<Task[]> {
+  async findByCategoryId(categoryId: string): Promise<TaskWithDetails[]> {
     return (await prisma.task.findMany({
       where: { categoryId },
+      include: {
+        assignedUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            color: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
-    })) as Task[];
+    })) as TaskWithDetails[];
   }
 
-  async findByStatus(status: TaskStatus): Promise<Task[]> {
+  async findByStatus(status: TaskStatus): Promise<TaskWithDetails[]> {
     return (await prisma.task.findMany({
       where: { status },
+      include: {
+        assignedUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            color: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
-    })) as Task[];
+    })) as TaskWithDetails[];
   }
 
-  async findByAssignedUser(userId: string): Promise<Task[]> {
+  async findByAssignedUser(userId: string): Promise<TaskWithDetails[]> {
     return (await prisma.task.findMany({
       where: { assignedUserId: userId },
+      include: {
+        assignedUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            color: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
-    })) as Task[];
+    })) as TaskWithDetails[];
   }
 
-  async findByCreatedUser(userId: string): Promise<Task[]> {
+  async findByCreatedUser(userId: string): Promise<TaskWithDetails[]> {
     return (await prisma.task.findMany({
       where: { createdById: userId },
+      include: {
+        assignedUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            color: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
-    })) as Task[];
+    })) as TaskWithDetails[];
+  }
+
+  async findByTitleAndCategory(title: string, categoryId: string | null): Promise<TaskWithDetails | null> {
+    return (await prisma.task.findFirst({
+      where: {
+        title,
+        categoryId,
+      },
+      include: {
+        assignedUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            color: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    })) as TaskWithDetails | null;
   }
 
   async update(id: string, data: UpdateTaskData): Promise<Task> {
@@ -71,9 +248,33 @@ export class TaskRepository implements ITaskRepository {
     }) as any;
   }
 
-  async findAll(): Promise<Task[]> {
+  async findAll(): Promise<TaskWithDetails[]> {
     return (await prisma.task.findMany({
+      include: {
+        assignedUser: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            color: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
-    })) as Task[];
+    })) as TaskWithDetails[];
   }
 }
