@@ -39,7 +39,7 @@ Antes de executar este projeto, certifique-se de ter os seguintes itens instalad
 
 1. **Clone o repositório**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/joaovitornunes09/task-flow-api.git
    cd task-flow
    ```
 
@@ -47,30 +47,18 @@ Antes de executar este projeto, certifique-se de ter os seguintes itens instalad
    ```bash
    cp .env.example .env
    ```
-   
-   Opcionalmente, edite o arquivo `.env` para personalizar a configuração:
-   ```env
-   DATABASE_URL="postgresql://postgres:postgres@localhost:5432/taskflow?schema=public"
-   JWT_SECRET="your-super-secret-jwt-key-minimum-32-characters"
-   PORT=3333
-   NODE_ENV="production"
-   POSTGRES_DB=taskflow
-   POSTGRES_USER=postgres
-   POSTGRES_PASSWORD=postgres
-   DB_PORT=5432
-   ```
 
 3. **Inicie a aplicação**
    ```bash
-   docker-compose up --build
+   docker compose up -d --build
    ```
-   
+
    Este comando irá:
    - Construir a imagem Docker da aplicação
    - Iniciar um container do PostgreSQL
    - Executar as migrações do banco de dados
    - Iniciar o servidor da API
-   
+
 4. **Acesse a aplicação**
    - API: http://localhost:3333
    - Documentação da API: http://localhost:3333/docs
@@ -80,7 +68,7 @@ Antes de executar este projeto, certifique-se de ter os seguintes itens instalad
 
 1. **Clone e instale as dependências**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/joaovitornunes09/task-flow-api.git
    cd task-flow
    pnpm install
    ```
@@ -89,10 +77,10 @@ Antes de executar este projeto, certifique-se de ter os seguintes itens instalad
    ```bash
    # Inicie o PostgreSQL (ou use sua instância existente)
    # Crie um banco de dados chamado 'taskflow'
-   
+
    # Copie o arquivo de ambiente
    cp .env.example .env
-   
+
    # Edite o arquivo .env com suas credenciais do banco
    ```
 
