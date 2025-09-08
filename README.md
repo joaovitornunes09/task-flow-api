@@ -21,6 +21,7 @@ Sistema de gerenciamento de tarefas desenvolvido com Node.js, Fastify, TypeScrip
 - **ORM**: Prisma
 - **Autenticação**: JWT
 - **Hash de Senhas**: bcryptjs
+- **Testes**: Jest (Testes Unitários)
 - **Gerenciador de Pacotes**: pnpm
 - **Containerização**: Docker & Docker Compose
 
@@ -124,6 +125,7 @@ A aplicação utiliza as seguintes entidades principais:
 - `pnpm dev` - Iniciar servidor de desenvolvimento com hot reload
 - `pnpm build` - Construir o projeto para produção
 - `pnpm start` - Iniciar servidor de produção
+- `pnpm test` - Executar testes unitários com Jest
 - `pnpm prisma:generate` - Gerar cliente Prisma
 - `pnpm prisma:push` - Enviar alterações do schema para o banco
 - `pnpm prisma:migrate` - Executar migrações do banco de dados
@@ -152,24 +154,3 @@ task-flow/
 ├── docker-compose.yml   # Configuração multi-container
 └── package.json         # Dependências e scripts do projeto
 ```
-
-## 🔐 Variáveis de Ambiente
-
-| Variável | Descrição | Padrão |
-|----------|-----------|--------|
-| `DATABASE_URL` | String de conexão PostgreSQL | - |
-| `JWT_SECRET` | Chave secreta para assinatura de tokens JWT | - |
-| `PORT` | Porta do servidor | 3333 |
-| `NODE_ENV` | Modo do ambiente | development |
-
-## 🤝 Contribuição
-
-Este é um projeto de avaliação técnica. Para dúvidas ou problemas, consulte os requisitos do projeto ou entre em contato com a equipe de desenvolvimento.
-
-## 📄 Licença
-
-Este projeto foi desenvolvido como parte de uma avaliação técnica e não se destina ao uso comercial.
-
----
-
-**Desenvolvido com ❤️ usando Node.js, Fastify e TypeScript**
